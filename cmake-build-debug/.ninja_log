@@ -1,5 +1,0 @@
-# ninja log v5
-1	178	1696703316696013177	CMakeFiles/exam_rank_03.dir/test.c.o	3526c43dee5eb102
-1	179	1696703316696882813	CMakeFiles/exam_rank_03.dir/ft_printf.c.o	2a8fab6b5e500109
-1	179	1696703316697052349	CMakeFiles/exam_rank_03.dir/get_next_line.c.o	2d8230dfe3ce53a3
-2	181	1696703316697958775	CMakeFiles/exam_rank_03.dir/get_next_line2.c.o	b832e9f49776f831
