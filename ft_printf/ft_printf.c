@@ -6,7 +6,7 @@
 /*   By: mdanchev <mdanchev@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/09 07:13:49 by mdanchev          #+#    #+#             */
-/*   Updated: 2023/10/09 09:12:34 by mdanchev         ###   ########.fr       */
+/*   Updated: 2023/10/26 21:47:24 by mdanchev         ###   lausanne.ch       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,8 @@ int ft_printf(const char *last, ... )
 				print_decimal(va_arg(ap, int), &count);
 			if (last[i + 1] == 'x')
 				print_hexadecimal(va_arg(ap, unsigned int), &count);
+			if (last[i + 1] == '%')
+				count = (int)write(1, &last[i], 1);
 			i++;
 		}
 		i++;
@@ -109,8 +111,8 @@ int main(void)
 	unsigned int c = 4294967295;
 	char *s = NULL;
 
-	res1 = ft_printf("hello %s %d %d %x\n", s, a, b, c);
-	res2 = printf("hello %s %d %d %x\n", s, a, b, c);
+	res1 = ft_printf("hello %s %d %d %x %%\n", s, a, b, c);
+	res2 = printf("hello %s %d %d %x %%\n", s, a, b, c);
 
 	printf("res1 = %d\n", res1);
 	printf("res2 = %d\n", res2);
