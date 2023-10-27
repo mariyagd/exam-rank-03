@@ -6,7 +6,7 @@
 /*   By: mdanchev <mdanchev@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/09 07:13:49 by mdanchev          #+#    #+#             */
-/*   Updated: 2023/10/26 21:47:24 by mdanchev         ###   lausanne.ch       */
+/*   Updated: 2023/10/27 15:28:50 by mdanchev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void    print_string(char *s, int *count)
 	}
 	while (*s)
 	{
-		*count = (int)write(1, &(*s), 1);
+		*count += (int)write(1, &(*s), 1);
 		s++;
 	}
 }
@@ -57,15 +57,9 @@ void    print_hexadecimal(unsigned int hex, int *count)
 		print_hexadecimal(hex % 16, count);
 	}
 	else if (hex > 9 && hex < 16)
-	{
-		write(1, &(char){hex + 'a' - 10}, 1);
-		(*count)++;
-	}
+		*count += (int)write(1, &(char){hex + 'a' - 10}, 1);
 	else
-	{
-		write(1, &(char){hex + '0'}, 1);
-		(*count)++;
-	}
+		*count += (int)write(1, &(char){hex + '0'}, 1);
 }
 
 int ft_printf(const char *last, ... )
@@ -80,10 +74,7 @@ int ft_printf(const char *last, ... )
 	while (last[i])
 	{
 		if (last[i] != '%')
-		{
-			write(1, &last[i], 1);
-			count++;
-		}
+			count += (int)write(1, &last[i], 1);
 		else
 		{
 			if (last[i + 1] == 's')
@@ -93,7 +84,7 @@ int ft_printf(const char *last, ... )
 			if (last[i + 1] == 'x')
 				print_hexadecimal(va_arg(ap, unsigned int), &count);
 			if (last[i + 1] == '%')
-				count = (int)write(1, &last[i], 1);
+				count += (int)write(1, &last[i], 1);
 			i++;
 		}
 		i++;
@@ -102,19 +93,15 @@ int ft_printf(const char *last, ... )
 	return (count);
 }
 
-int main(void)
+/*
+int	main(void)
 {
-	int res1;
-	int res2;
-	int a = 64532;
-	int b = -16;
-	unsigned int c = 4294967295;
-	char *s = NULL;
+	int	res1;
+	int	res2;
 
-	res1 = ft_printf("hello %s %d %d %x %%\n", s, a, b, c);
-	res2 = printf("hello %s %d %d %x %%\n", s, a, b, c);
+	res1 = printf("salut %s sa%dva%xhaha\n", "comment", 10, 654);
+	res2 = ft_printf("salut %s sa%dva%xhaha\n", "comment", 10, 654);
 
 	printf("res1 = %d\n", res1);
 	printf("res2 = %d\n", res2);
-	return 0;
-}
+}*/

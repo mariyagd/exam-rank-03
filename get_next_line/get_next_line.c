@@ -3,50 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mdanchev <mdanchev@student.42lausanne.ch>  +#+  +:+       +#+        */
+/*   By: mdanchev <marvin@42lausanne.ch>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/09 10:12:11 by mdanchev          #+#    #+#             */
-/*   Updated: 2023/10/09 11:58:09 by mdanchev         ###   ########.fr       */
+/*   Created: 2023/10/27 12:10:13 by mdanchev          #+#    #+#             */
+/*   Updated: 2023/10/27 14:16:49 by mdanchev         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <unistd.h>
+#include "get_next_line.h"
 
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 0
-#endif
-
-void    ft_bzero(char *s, int size)
+size_t	ft_strlen(const char *s)
 {
-	int i;
-
-	i = 0;
-	if (!s)
-		return ;
-	while (i < size + 1)
-	{
-		s[i] = '\0';
-		i++;
-	}
-}
-
-char    *ft_calloc(int count)
-{
-	char    *s;
-
-	s = malloc(sizeof(char) * (count + 1));
-	if (!s)
-		return (NULL);
-	ft_bzero(s, count);
-	return (s);
-}
-
-int ft_strlen(char *s)
-{
-	int i;
+	size_t	i;
 
 	i = 0;
 	if (!s)
@@ -56,9 +23,35 @@ int ft_strlen(char *s)
 	return (i);
 }
 
-bool    there_is_n(char *s)
+char	*ft_calloc(size_t count)
 {
-	int i;
+	char		*s;
+	size_t		i;
+
+	i = 0;
+	s = malloc(sizeof(char) * (count + 1));
+	if (!s)
+		return (NULL);
+	while (i < count + 1)
+	{
+		s[i] = '\0';
+		i++;
+	}
+	return (s);
+}
+
+char	*free_(char *s1, char *s2)
+{
+	if (s1)
+		free(s1);
+	if (s2)
+		free(s2);
+	return (NULL);
+}
+
+bool	there_is_n(const char *s)
+{
+	int	i;
 
 	i = 0;
 	if (!s)
@@ -72,173 +65,141 @@ bool    there_is_n(char *s)
 	return (false);
 }
 
-char    *free_helper(char *s1, char *s2)
+char	*ft_join(char *s1, char *s2)
 {
-	if (s1)
-	{
-		free(s1);
-		s1 = NULL;
-	}
-	if (s2)
-	{
-		free(s2);
-		s2 = NULL;
-	}
-	return (NULL);
-}
+	int		i;
+	int		j;
+	char	*new;
 
-char    *ft_strjoin(char *line, char *buffer)
-{
-	int     i;
-	int     j;
-	char    *new;
-
+	new = ft_calloc(ft_strlen(s1) + ft_strlen(s2));
+	if (!new)
+		return (free_(s1, NULL));
 	i = 0;
 	j = 0;
-	if ((ft_strlen(line) + ft_strlen(buffer)) == 0)
+	while (s1[i])
+	{
+		new[i] = s1[i];
+		i++;
+	}
+	while (s2[j])
+	{
+		new[i] = s2[j];
+		i++;
+		j++;
+	}
+	free_(s1, NULL);
+	return (new);
+}
+
+char	*prepare_string(char **line, char **buffer)
+{
+	if (!*line)
+	{
+		*line = ft_calloc(0);
+		if (!*line)
+			return (NULL);
+	}
+	*buffer = ft_calloc(BUFFER_SIZE);
+	if (!*buffer)
+		return (free_(*line, NULL));
+	return ("ok");
+}
+
+char	*read_fd(int fd, char *line)
+{
+	int		bytes;
+	char	*buffer;
+
+	buffer = NULL;
+	if (prepare_string(&line, &buffer) == NULL)
 		return (NULL);
-	new = ft_calloc(ft_strlen(line) + ft_strlen(buffer));
+	while (line && there_is_n(line) == false)
+	{
+		bytes = (int)read(fd, buffer, BUFFER_SIZE);
+		if (bytes < 0)
+			return (free_(line, buffer));
+		if (bytes == 0)
+			break ;
+		buffer[bytes] = '\0';
+		line = ft_join(line, buffer);
+	}
+	free(buffer);
+	if (line && line[0] == '\0')
+		return (free_(line, NULL));
+	return (line);
+}
+
+char	*get_result(const char *line)
+{
+	int		i;
+	int		len;
+	char	*new;
+
+	len = 0;
+	while (line[len] != '\0' && line[len] != '\n')
+		len++;
+	if (line[len] == '\n')
+		len++;
+	new = ft_calloc(len);
 	if (!new)
 		return (NULL);
-	while (line[i])
+	i = 0;
+	while (i < len)
 	{
 		new[i] = line[i];
 		i++;
 	}
-	while (buffer[j])
-	{
-		new[i] = buffer[j];
-		i++;
-		j++;
-	}
-	free_helper(line, NULL);
 	return (new);
 }
 
-
-
-char *read_fd(char *line, int fd)
+char	*get_nx_line(char *line)
 {
-	int     nBytes;
-	char    *buffer;
-
-	nBytes = 1;
-	buffer = ft_calloc(BUFFER_SIZE + 1);
-	if (!buffer)
-		return (free_helper(line, NULL));
-	if (!line)
-	{
-		line = ft_calloc(0);
-		if (!line)
-			return (free_helper(buffer, NULL));
-	}
-	while (there_is_n(line) == false)
-	{
-		nBytes = (int)read(fd, buffer, BUFFER_SIZE);
-		if (nBytes < 0)
-			return (free_helper(line, buffer));
-		else if (nBytes == 0)
-			break ;
-	//	buffer[nBytes] = '\0';
-		line = ft_strjoin(line, buffer);
-		if (!line)
-			return (free_helper(line, buffer));
-		ft_bzero(buffer, BUFFER_SIZE);
-	}
-	free(buffer);
-	return (line);
-}
-
-char    *ft_split(char *fullline)
-{
-	char     *line_to_print;
-	int     i;
+	int		i;
+	int		j;
+	char	*new;
 
 	i = 0;
-	if (fullline[i] == '\0')
-		return (NULL);
-	while (fullline[i] != '\0' && fullline[i] != '\n')
+	while (line[i] != '\n' && line[i] != '\0')
 		i++;
-	line_to_print = ft_calloc(i);
-	if (!line_to_print)
-		return (NULL);
-	i = 0;
-	while (fullline[i] != '\0' && line_to_print[i - 1] != '\n')
-	{
-		line_to_print[i] = fullline[i];
+	if (line[i] == '\n')
 		i++;
-	}
-	return (line_to_print);
-}
-
-char *remember_line(char *fullline)
-{
-	char    *line;
-	int     i;
-	int     j;
-
-	i = 0;
+	new = ft_calloc(ft_strlen(line) - i);
+	if (!new)
+		return (free_(line, NULL));
 	j = 0;
-	while (fullline[i] != '\0' && fullline[i] != '\n')
-		i++;
-	if (fullline[i] == '\0')
-		return (NULL);
-	i++;
-	line = ft_calloc(ft_strlen(fullline) - i);
-	if (!line)
-		return (NULL);
-	while (fullline[i])
+	while (line[i])
 	{
-		line[j] = fullline[i];
+		new[j] = line[i];
 		i++;
 		j++;
 	}
-	return (line);
+	free_(line, NULL);
+	return (new);
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
-	static char *line;
-	char        *fullline;
-	char        *line_to_print;
+	static char	*line;
+	char		*result;
 
-	fullline = NULL;
-	line_to_print = NULL;
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
-	fullline = read_fd(line, fd);
-	if (!fullline)
-		return (NULL);
-	line_to_print = ft_split(fullline);
-	if (!line_to_print)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
 	{
-		free(fullline);
-		return (NULL);
-	}
-	line = remember_line(fullline);
-	free(fullline);
-	return (line_to_print);
-}
-
-int main(void)
-{
-	int     fd;
-	char    *line;
-	int     i;
-
-	i = 0;
-	fd = open("test", O_RDONLY);
-	line = NULL;
-	line = get_next_line(fd);
-	while (line)
-	{
-		printf("%d = ", i);
-		printf("%s", line);
-		free(line);
+		free_(line, NULL);
 		line = NULL;
-		line = get_next_line(fd);
-		i++;
+		return (NULL);
 	}
-	close (fd);
-	return (0);
+	line = read_fd(fd, line);
+	if (!line)
+		return (NULL);
+	result = get_result(line);
+	if (!result)
+		return (free_(line, NULL));
+	line = get_nx_line(line);
+	if (!line)
+	{
+		free(result);
+		line = NULL;
+		result = NULL;
+	}
+	return (result);
 }

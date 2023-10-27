@@ -9,7 +9,7 @@
 					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
-						"string" : "3.26"
+						"string" : "3.25"
 					},
 					"projectIndex" : 0,
 					"source" : ".",
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "get_next_line::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-get_next_line-Debug-78ee54fd75f7d11e2953.json",
+					"jsonFile" : "target-get_next_line-Debug-90f3b3bd884f99db747d.json",
 					"name" : "get_next_line",
 					"projectIndex" : 0
 				}
@@ -49,12 +49,12 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/Users/mariyadancheva/Documents/GitHub/exam-rank-03/get_next_line/cmake-build-debug",
-		"source" : "/Users/mariyadancheva/Documents/GitHub/exam-rank-03/get_next_line"
+		"build" : "/Users/mdanchev/Desktop/exam-rank-03/get_next_line/cmake-build-debug",
+		"source" : "/Users/mdanchev/Desktop/exam-rank-03/get_next_line"
 	},
 	"version" : 
 	{
 		"major" : 2,
-		"minor" : 5
+		"minor" : 4
 	}
 }
